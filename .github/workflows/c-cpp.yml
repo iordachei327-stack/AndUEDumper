@@ -26,7 +26,7 @@ jobs:
       - name: Build AndUEDumper
         run: |
           export NDK_HOME=$PWD/android-ndk-r25c
-          cd AndUEDumper/AndUEDumper
+          cd AndUEDumper
           make clean && make
 
       - name: Upload build artifact
