@@ -1,0 +1,25 @@
+name: Build AndUEDumper
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up NDK (needed for Android builds)
+      uses: android-actions/setup-ndk@v2
+      with:
+        ndk-version: '21.4.7075529'  # Contoh versi NDK; sesuaikan bila perlu
+
+    - name: Build AndUEDumper
+      run: |
+        cd AndUEDumper/AndUEDumper
+        make clean && make
