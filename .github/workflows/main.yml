@@ -1,23 +1,34 @@
-- name: Install dependencies
-  # Memperbarui dan menginstal paket yang diperlukan untuk kompilasi
-  run: sudo apt-get update && sudo apt-get install -y make git wget unzip
+# Langkah 1: Checkout Kode Sumber
+- name: Checkout Source Code (mengambil submodul rekursif)
+  # Menggunakan actions/checkout@v4 (versi terbaru)
+  uses: actions/checkout@v4
+  with:
+    submodules: recursive
+    
+# Langkah 2: Instal Dependencies yang dibutuhkan
+- name: Install Dependencies
+  run: |
+    sudo apt-get update
+    sudo apt-get install -y make git wget unzip
   
-- name: Download Android NDK
-  # Mengunduh dan mengekstrak Android NDK r25c
+# Langkah 3: Unduh dan Ekstrak Android NDK
+- name: Download and Unzip Android NDK r25c
   run: |
     wget https://dl.google.com/android/repository/android-ndk-r25c-linux.zip
     unzip android-ndk-r25c-linux.zip
     
-- name: Build
-  # Menjalankan perintah make (export NDK_HOME sangat penting di sini)
+# Langkah 4: Proses Build Menggunakan make
+- name: Build Project (Menggunakan NDK)
+  # Working directory diatur ke subdirektori AndUEDumper
+  working-directory: ./AndUEDumper
   run: |
+    # Mengatur variabel lingkungan NDK_HOME
     export NDK_HOME=$GITHUB_WORKSPACE/android-ndk-r25c
     make clean && make
-  working-directory: ./AndUEDumper
   
-- name: Upload build artifact
-  # FIX: Mengganti versi actions/upload-artifact dari v3 ke V4
-  # Ini adalah perbaikan untuk error "deprecated version of actions/upload-artifact: v3"
+# Langkah 5: Unggah Hasil Build sebagai Artifact
+- name: Upload Build Artifact
+  # Menggunakan actions/upload-artifact@v4 (solusi untuk error 'deprecated v3')
   uses: actions/upload-artifact@v4
   with:
     name: AndUEDumper-build
