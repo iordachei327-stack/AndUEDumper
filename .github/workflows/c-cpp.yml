@@ -14,7 +14,6 @@ jobs:
       actions: write
       contents: write
       checks: write
-      artifactmetadata: write
       issues: write
       deployments: write
       packages: write
@@ -23,7 +22,6 @@ jobs:
       repository-projects: write
       security-events: write
       statuses: write
-      metadata: read
       models: read
       discussions: write
       attestations: write
