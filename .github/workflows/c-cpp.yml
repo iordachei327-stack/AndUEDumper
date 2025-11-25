@@ -1,36 +1,44 @@
-name: Build AndUEDumper
+name: Build and Upload Artifact
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+
+    permissions:
+      actions: write
+      contents: write
+      checks: write
+      artifactmetadata: write
+      issues: write
+      deployments: write
+      packages: write
+      pages: write
+      pull-requests: write
+      repository-projects: write
+      security-events: write
+      statuses: write
+      metadata: read
+      models: read
+      discussions: write
+      attestations: write
 
     steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: sudo apt-get install -y make git wget unzip
-
-      - name: Download and extract Android NDK r25c
+      - name: Run build command
         run: |
-          wget https://dl.google.com/android/repository/android-ndk-r25c-linux.zip
-          unzip android-ndk-r25c-linux.zip
-
-      - name: Build AndUEDumper
-        run: |
-          export NDK_HOME=$PWD/android-ndk-r25c
-          cd AndUEDumper
-          make clean && make
+          # Ganti ini sesuai perintah build projectmu, contoh C/C++:
+          make
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: AndUEDumper-build
-          path: AndUEDumper/build/
+          name: my-build-output
+          path: path/ke/hasil/build/
