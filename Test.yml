@@ -1,35 +1,43 @@
-# Langkah 1: Checkout Kode Sumber
-- name: Checkout Source Code (mengambil submodul rekursif)
-  # Menggunakan actions/checkout@v4 (versi terbaru)
-  uses: actions/checkout@v4
-  with:
-    submodules: recursive
-    
-# Langkah 2: Instal Dependencies yang dibutuhkan (make, git, wget, unzip)
-- name: Install Dependencies
-  run: |
-    sudo apt-get update
-    sudo apt-get install -y make git wget unzip
-  
-# Langkah 3: Unduh dan Ekstrak Android NDK
-- name: Download and Unzip Android NDK r25c
-  run: |
-    wget https://dl.google.com/android/repository/android-ndk-r25c-linux.zip
-    unzip android-ndk-r25c-linux.zip
-    
-# Langkah 4: Proses Build Menggunakan make
-- name: Build Project (Menggunakan NDK)
-  # Working directory diatur ke subdirektori AndUEDumper
-  working-directory: ./AndUEDumper
-  run: |
-    # Mengatur variabel lingkungan NDK_HOME agar makefile dapat menemukannya
-    export NDK_HOME=$GITHUB_WORKSPACE/android-ndk-r25c
-    make clean && make
-  
-# Langkah 5: Unggah Hasil Build sebagai Artifact
-- name: Upload Build Artifact
-  # FIX PENTING: Menggunakan actions/upload-artifact@v4 (menghindari error 'deprecated v3')
-  uses: actions/upload-artifact@v4
-  with:
-    name: AndUEDumper-build
-    path: AndUEDumper/build/
+name: Build AndUEDumper
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Source Code (recursive submodules)
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y make git wget unzip
+
+    - name: Download and Unzip Android NDK r25c
+      run: |
+        wget -q https://dl.google.com/android/repository/android-ndk-r25c-linux.zip
+        unzip -o android-ndk-r25c-linux.zip
+        rm android-ndk-r25c-linux.zip
+
+    - name: Build Project (Using NDK)
+      working-directory: ./AndUEDumper
+      env:
+        NDK_HOME: ${{ github.workspace }}/android-ndk-r25c
+      run: |
+        chmod +x make
+        make clean && make
+
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: AndUEDumper-build
+        path: AndUEDumper/build/
